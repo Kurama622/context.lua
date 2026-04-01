@@ -17,7 +17,7 @@
     {
       "<C-g>",
       function()
-        require("context"):context()
+        require("context"):show()
       end,
       desc = "Show Context"
     },

@@ -272,7 +272,7 @@ local function treesitter_context(self, ft)
   end
 end
 
-function M:context()
+function M:show()
   if self.source == "treesitter" then
     treesitter_context(self, vim.o.ft)
   elseif self.source == "lsp" then
