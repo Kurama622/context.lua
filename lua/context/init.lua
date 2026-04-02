@@ -136,8 +136,10 @@ end
 local default_signature_match = {
   rule = function(signature_type)
     if
-      signature_type:find("declarator$")
-      or signature_type:find("identifier$")
+      (
+        signature_type:find("declarator$")
+        or signature_type:find("identifier$")
+      ) and signature_type ~= "qualified_identifier"
     then
       return true
     end

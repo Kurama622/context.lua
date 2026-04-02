@@ -5,6 +5,7 @@
 ```lua
 {
   "Kurama622/context.lua",
+  cmd = "ShowContext",
   opts = {
     sep = {
       cpp = "::",
@@ -13,14 +14,6 @@
     },
     source = "treesitter", -- treesitter | lsp
   },
-  keys = {
-    {
-      "<C-g>",
-      function()
-        require("context"):show()
-      end,
-      desc = "Show Context"
-    },
-  },
+  keys = { { "<C-g>", "<cmd>ShowContext<CR>", desc = "Show Context" } },
 }
 ```
