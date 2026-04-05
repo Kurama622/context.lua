@@ -86,6 +86,7 @@ local function lsp_context(self, ft)
               or s.kind == vim.lsp.protocol.SymbolKind.Class
               or s.kind == vim.lsp.protocol.SymbolKind.Namespace
               or s.kind == vim.lsp.protocol.SymbolKind.Constructor
+              or s.kind == vim.lsp.protocol.SymbolKind.Object
             )
           then
             table.insert(filtered, s)
@@ -107,6 +108,7 @@ local function lsp_context(self, ft)
             or t.kind == "Class"
             or t.kind == "Namespace"
             or t.kind == "Constructor"
+            or t.kind == "Object"
         end,
         vim.lsp.util.symbols_to_items(
           { result[mid] },
@@ -205,6 +207,17 @@ local signature_match = {
     rule = default_signature_match.rule,
     stop_search = true,
   },
+  rust = {
+    rule = function(signature_type)
+      if
+        signature_type:find("identifier$")
+        or signature_type == "generic_type"
+      then
+        return true
+      end
+    end,
+    stop_search = false,
+  },
 }
 
 -- name match
@@ -269,6 +282,7 @@ local function treesitter_context(self, ft)
                     .. vim.treesitter.get_node_text(name_node, 0)
                 )
                 hl_type = "Conceal"
+                break
               end
             end
           end
@@ -284,6 +298,7 @@ local function treesitter_context(self, ft)
                 .. vim.treesitter.get_node_text(signature_node, 0)
             )
             hl_type = "Conceal"
+            break
           end
         end
       end
