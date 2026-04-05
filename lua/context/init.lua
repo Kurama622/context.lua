@@ -7,7 +7,9 @@ local M = {
     ["type"] = true,
     ["enum"] = true,
     ["field"] = true,
+    ["impl"] = true,
   },
+
   source = "treesitter", -- treesitter | lsp
   sep = {
     cpp = "::",
@@ -132,6 +134,30 @@ local function lsp_context(self, ft)
   )
 end
 
+local default_specifier_match = {
+  rule = function(specifier)
+    if
+      specifier:find("_declaration$")
+      or specifier:find("_definition$")
+      or specifier:find("_specifier$")
+    then
+      return true
+    end
+  end,
+}
+local specifier_match = {
+  cpp = { rule = default_specifier_match.rule },
+  c = { rule = default_specifier_match.rule },
+  python = { rule = default_specifier_match.rule },
+  rust = {
+    rule = function(specifier)
+      if specifier:find("_item$") then
+        return true
+      end
+    end,
+  },
+}
+
 -- signature_match
 local default_signature_match = {
   rule = function(signature_type)
@@ -204,15 +230,13 @@ local function treesitter_context(self, ft)
   local tbl = {}
 
   while node do
-    local t = node:type()
+    local specifier_node = node:type()
 
-    -- declarator|definition|specifier: void print(const char*) { ... }
-    if
-      t:find("_declaration$")
-      or t:find("_definition$")
-      or t:find("_specifier$")
-    then
-      local word = t:match("(%w+)_")
+    -- specifier(declarator|definition): void print(const char*) { ... }
+    local spfm = specifier_match[ft] and specifier_match[ft]
+      or default_specifier_match
+    if spfm.rule(specifier_node) then
+      local word = specifier_node:match("(%w+)_")
       local hl_type = self.hl_keywords[word] and word or "Conceal"
 
       --  signature: print(const char*)
