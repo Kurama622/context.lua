@@ -35,7 +35,7 @@ local default_signature_match = {
       return true
     end
   end,
-  stop_search = true,
+  stop_search = false,
 }
 
 local signature_match = {
